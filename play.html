@@ -199,8 +199,9 @@
             }
 
             #noah {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
+                bottom: 50px; /* スマホでは下部に余裕を持たせる */
             }
 
             .enemy {
@@ -240,6 +241,15 @@
             color: white;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        /* ゲームエリアの高さを確保 */
+        @media (max-height: 600px) {
+            #noah {
+                bottom: 10px;
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
@@ -322,12 +332,37 @@
             { name: '課金', image: 'images/in-app-purchase.png' }
         ];
         
+        // ノアの位置を調整
+        function adjustNoahPosition() {
+            const isMobile = window.innerWidth <= 768;
+            const isShortScreen = window.innerHeight <= 600;
+            
+            if (isMobile) {
+                if (isShortScreen) {
+                    noah.style.bottom = '10px';
+                    noah.style.width = '60px';
+                    noah.style.height = '60px';
+                } else {
+                    noah.style.bottom = '50px';
+                    noah.style.width = '70px';
+                    noah.style.height = '70px';
+                }
+            } else {
+                noah.style.bottom = '20px';
+                noah.style.width = '100px';
+                noah.style.height = '100px';
+            }
+        }
+        
         // ゲーム初期化
         function initGame() {
             score = 0;
             timeLeft = 30;
             enemies = [];
             gameRunning = true;
+            
+            // ノアの位置を調整
+            adjustNoahPosition();
             
             // 既存の敵を削除
             document.querySelectorAll('.enemy').forEach(enemy => enemy.remove());
@@ -566,8 +601,14 @@
             this.alt = 'エンディング画像（読み込みエラー）';
         });
         
+        // ウィンドウサイズ変更時にノアの位置を調整
+        window.addEventListener('resize', adjustNoahPosition);
+        
         // ゲーム開始
         window.addEventListener('DOMContentLoaded', () => {
+            // ノアの位置を調整
+            adjustNoahPosition();
+            
             // アニメーションを開始
             requestAnimationFrame(moveEnemies);
             
