@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <title>⚔️ノアのスマホスラッシュ！</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "DotGothic16", serif;
+        }
+
+        body {
+            background-color: #f0f8ff;
+            color: #2c3e50;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+            position: relative;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        #bgm-toggle {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #bgm-toggle:hover {
+            background-color: #2980b9;
+        }
+
+        #bgm-toggle.off {
+            background-color: #95a5a6;
+        }
+
+        .enemy {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 10;
+        }
+
+        #noah {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background-image: url('images/noah-dot1.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 20;
+        }
+
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            display: none;
+        }
+
+        #game-over h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        #final-score {
+            font-size: 2rem;
+            color: #f1c40f;
+            margin-bottom: 20px;
+        }
+
+        #ending-image {
+            max-width: 300px;
+            width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #game-message {
+            font-size: 1.5rem;
+            color: #2ecc71;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        #home-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        #home-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        .slash-effect {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,10 L90,90 M90,10 L10,90" stroke="white" stroke-width="5" /></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 15;
+            opacity: 0;
+            animation: slash 0.3s forwards;
+        }
+
+        @keyframes slash {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(45deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5) rotate(90deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #score, #timer {
+                font-size: 1.2rem;
+            }
+
+            #bgm-toggle {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+
+            #noah {
+                width: 80px;
+                height: 80px;
+            }
+
+            .enemy {
+                width: 60px;
+                height: 60px;
+            }
+
+            #game-over h1 {
+                font-size: 2rem;
+            }
+
+            #final-score {
+                font-size: 1.5rem;
+            }
+
+            #ending-image {
+                max-width: 200px;
+            }
+
+            #game-message {
+                font-size: 1.2rem;
+            }
+
+            #home-button {
+                font-size: 1.2rem;
+                padding: 12px 24px;
+            }
+        }
+
+        /* 画像がない場合のフォールバック */
+        .enemy-fallback {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="status-bar">
+            <div id="score">斬った誘惑: 0</div>
+            <div id="timer">残り時間: 30秒</div>
+            <button id="bgm-toggle">BGM: ON</button>
+        </div>
+        
+        <div id="noah"></div>
+        
+        <div id="game-over">
+            <h1>ゲーム終了！</h1>
+            <div id="final-score">斬った誘惑: 0</div>
+            <img id="ending-image" src="images/ending.png" alt="エンディング画像" onerror="this.src='/placeholder.svg?height=200&width=300'; this.alt='エンディング画像（読み込みエラー）';">
+            <div id="game-message"></div>
+            <button id="home-button">ホームに戻る</button>
+        </div>
+    </div>
+
+    <audio id="bgm" loop>
+        <source src="audios/bgm.mp3" type="audio/mp3">
+    </audio>
+    
+    <audio id="sword-sound">
+        <source src="audios/sword.mp3" type="audio/mp3">
+    </audio>
+
+    <audio id="game-over-sound">
+        <source src="audios/game-over.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        // ゲーム変数
+        let score = 0;
+        let timeLeft = 30;
+        let gameRunning = false;
+        let enemies = [];
+        let timerInterval;
+        let enemySpawnInterval;
+        let bgmPlaying = true;
+        
+        // DOM要素
+        const gameContainer = document.getElementById('game-container');
+        const noah = document.getElementById('noah');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const bgmToggle = document.getElementById('bgm-toggle');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const gameMessage = document.getElementById('game-message');
+        const homeButton = document.getElementById('home-button');
+        const bgm = document.getElementById('bgm');
+        const swordSound = document.getElementById('sword-sound');
+        const gameOverSound = document.getElementById('game-over-sound');
+        const endingImage = document.getElementById('ending-image');
+        
+        // 終了メッセージ
+        const endMessages = [
+            "さすがに、もうスクロールやめよ？",
+            "その 'いいね' 、本当に欲しい？",
+            "SNSの沼、今日こそ抜け出そうぜ。",
+            "斬って斬って、集中力を取り戻せ！",
+            "映えより、今を大事にしよ。"
+        ];
+        
+        // 敵の種類
+        const enemyTypes = [
+            { name: '通知バッジ', image: 'images/notification.png' },
+            { name: 'レッドスネア', image: 'images/red-snare.png' },
+            { name: 'インスタントスター', image: 'images/instant-star.png' },
+            { name: 'コントローラー', image: 'images/controller.png' },
+            { name: 'メッセージアプリ', image: 'images/message.png' },
+            { name: 'ティックティッキー', image: 'images/ticktickey.png' },
+            { name: 'いいね', image: 'images/good.png' },
+            { name: '映え', image: 'images/photogenic.png' },
+            { name: '無限スクロール', image: 'images/infinite-scroll.png' },
+            { name: '課金', image: 'images/in-app-purchase.png' }
+        ];
+        
+        // ゲーム初期化
+        function initGame() {
+            score = 0;
+            timeLeft = 30;
+            enemies = [];
+            gameRunning = true;
+            
+            // 既存の敵を削除
+            document.querySelectorAll('.enemy').forEach(enemy => enemy.remove());
+            
+            // スコアと時間の表示を更新
+            updateScore();
+            updateTimer();
+            
+            // ゲームオーバー画面を非表示
+            gameOverScreen.style.display = 'none';
+            
+            // BGMを再生
+            if (bgmPlaying) {
+                playBGM();
+            }
+            
+            // タイマーを開始
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+            
+            // 敵の生成を開始
+            enemySpawnInterval = setInterval(spawnEnemy, 800);
+        }
+        
+        // 敵を生成
+        function spawnEnemy() {
+            if (!gameRunning) return;
+            
+            const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+            const enemy = document.createElement('div');
+            enemy.className = 'enemy';
+            
+            // 敵の位置を設定
+            const containerWidth = gameContainer.clientWidth;
+            const enemySize = window.innerWidth <= 768 ? 60 : 70;
+            const xPos = Math.random() * (containerWidth - enemySize);
+            
+            enemy.style.left = `${xPos}px`;
+            enemy.style.top = '-70px';
+            
+            // 敵の画像を設定
+            const img = new Image();
+            img.src = enemyType.image;
+            img.onload = () => {
+                enemy.style.backgroundImage = `url('${enemyType.image}')`;
+            };
+            img.onerror = () => {
+                enemy.classList.add('enemy-fallback');
+                enemy.textContent = enemyType.name.charAt(0);
+            };
+            
+            // 敵をクリックまたはタッチで斬る
+            enemy.addEventListener('mousedown', (e) => {
+                slashEnemy(enemy, e.clientX, e.clientY);
+            });
+            
+            enemy.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                slashEnemy(enemy, touch.clientX, touch.clientY);
+            });
+            
+            gameContainer.appendChild(enemy);
+            enemies.push({
+                element: enemy,
+                speed: 2 + Math.random() * 2
+            });
+        }
+        
+        // 敵を斬る
+        function slashEnemy(enemy, x, y) {
+            if (!gameRunning) return;
+            
+            // ノアのアニメーション
+            const randomPose = Math.random() < 0.5 ? 'images/noah-dot2.png' : 'images/noah-dot3.png';
+            noah.style.backgroundImage = `url('${randomPose}')`;
+            
+            // 斬撃エフェクト
+            const slashEffect = document.createElement('div');
+            slashEffect.className = 'slash-effect';
+            slashEffect.style.left = `${x - 50}px`;
+            slashEffect.style.top = `${y - 50}px`;
+            gameContainer.appendChild(slashEffect);
+            
+            // 効果音を再生
+            playSwordSound();
+            
+            // スコアを増やす
+            score++;
+            updateScore();
+            
+            // 敵を削除
+            enemy.remove();
+            enemies = enemies.filter(e => e.element !== enemy);
+            
+            // 一定時間後にノアを元のポーズに戻す
+            setTimeout(() => {
+                noah.style.backgroundImage = "url('images/noah-dot1.png')";
+            }, 300);
+            
+            // 斬撃エフェクトを削除
+            setTimeout(() => {
+                slashEffect.remove();
+            }, 300);
+        }
+        
+        // 敵を移動
+        function moveEnemies() {
+            if (!gameRunning) return;
+            
+            enemies.forEach((enemy, index) => {
+                const currentTop = parseFloat(enemy.element.style.top);
+                enemy.element.style.top = `${currentTop + enemy.speed}px`;
+                
+                // 画面外に出たら削除
+                if (currentTop > window.innerHeight) {
+                    enemy.element.remove();
+                    enemies.splice(index, 1);
+                }
+            });
+            
+            requestAnimationFrame(moveEnemies);
+        }
+        
+        // スコアを更新
+        function updateScore() {
+            scoreDisplay.textContent = `斬った誘惑: ${score}`;
+            finalScoreDisplay.textContent = `斬った誘惑: ${score}`;
+        }
+        
+        // タイマーを更新
+        function updateTimer() {
+            timerDisplay.textContent = `残り時間: ${timeLeft}秒`;
+        }
+        
+        // ゲーム終了
+        function endGame() {
+            gameRunning = false;
+            clearInterval(timerInterval);
+            clearInterval(enemySpawnInterval);
+            
+            // BGMを停止
+            bgm.pause();
+            
+            // ゲームオーバー音楽を再生
+            playGameOverSound();
+            
+            // ランダムなメッセージを表示
+            const randomMessage = endMessages[Math.floor(Math.random() * endMessages.length)];
+            gameMessage.textContent = randomMessage;
+            
+            // ゲームオーバー画面を表示
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        // BGMを再生
+        function playBGM() {
+            bgm.currentTime = 0;
+            bgm.play().catch(error => {
+                console.log('BGM再生エラー:', error);
+            });
+        }
+        
+        // 効果音を再生
+        function playSwordSound() {
+            swordSound.currentTime = 0;
+            swordSound.play().catch(error => {
+                console.log('効果音再生エラー:', error);
+            });
+        }
+        
+        // ゲームオーバー音楽を再生
+        function playGameOverSound() {
+            gameOverSound.currentTime = 0;
+            gameOverSound.play().catch(error => {
+                console.log('ゲームオーバー音楽再生エラー:', error);
+            });
+        }
+        
+        // BGMトグルボタン
+        bgmToggle.addEventListener('click', () => {
+            bgmPlaying = !bgmPlaying;
+            
+            if (bgmPlaying) {
+                bgmToggle.textContent = 'BGM: ON';
+                bgmToggle.classList.remove('off');
+                if (gameRunning) {
+                    playBGM();
+                }
+            } else {
+                bgmToggle.textContent = 'BGM: OFF';
+                bgmToggle.classList.add('off');
+                bgm.pause();
+            }
+        });
+        
+        // ホームボタン
+        homeButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+        
+        // デバイス検出
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // 画像の読み込みエラー処理
+        function handleImageError(element, fallbackText) {
+            element.classList.add('enemy-fallback');
+            element.textContent = fallbackText;
+        }
+        
+        // ノアの画像読み込みエラー処理
+        const noahImg = new Image();
+        noahImg.src = 'images/noah-dot1.png';
+        noahImg.onerror = () => {
+            noah.style.backgroundImage = 'none';
+            noah.textContent = 'ノア';
+            noah.style.backgroundColor = '#3498db';
+            noah.style.color = 'white';
+            noah.style.display = 'flex';
+            noah.style.justifyContent = 'center';
+            noah.style.alignItems = 'center';
+            noah.style.borderRadius = '50%';
+        };
+        
+        // エンディング画像の読み込みエラー処理
+        endingImage.addEventListener('error', function() {
+            this.src = '/placeholder.svg?height=200&width=300';
+            this.alt = 'エンディング画像（読み込みエラー）';
+        });
+        
+        // ゲーム開始
+        window.addEventListener('DOMContentLoaded', () => {
+            // アニメーションを開始
+            requestAnimationFrame(moveEnemies);
+            
+            // ゲームを初期化
+            initGame();
+            
+            // モバイルデバイスの場合はスワイプ検出を追加
+            if (isMobileDevice()) {
+                let startX, startY;
+                
+                document.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                }, { passive: false });
+                
+                document.addEventListener('touchmove', (e) => {
+                    if (!startX || !startY) return;
+                    
+                    const currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    const diffX = currentX - startX;
+                    const diffY = currentY - startY;
+                    
+                    // スワイプの距離が十分であれば
+                    if (Math.abs(diffX) > 30 || Math.abs(diffY) > 30) {
+                        // スワイプした位置にある敵を探す
+                        const elementsAtPoint = document.elementsFromPoint(currentX, currentY);
+                        const enemy = elementsAtPoint.find(el => el.classList.contains('enemy'));
+                        
+                        if (enemy) {
+                            slashEnemy(enemy, currentX, currentY);
+                        }
+                        
+                        startX = null;
+                        startY = null;
+                    }
+                }, { passive: false });
+            }
+        });
+        
+        // オーディオの読み込みエラー処理
+        bgm.addEventListener('error', () => {
+            console.log('BGMの読み込みに失敗しました');
+            bgmToggle.textContent = 'BGM: エラー';
+            bgmToggle.classList.add('off');
+            bgmPlaying = false;
+        });
+        
+        swordSound.addEventListener('error', () => {
+            console.log('効果音の読み込みに失敗しました');
+        });
+        
+        gameOverSound.addEventListener('error', () => {
+            console.log('ゲームオーバー音楽の読み込みに失敗しました');
+        });
+    </script>
+</body>
+</html>

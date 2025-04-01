@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <title>⚔️ノアのスマホスラッシュ！</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "DotGothic16", serif;
+        }
+
+        body {
+            background-color: #f0f8ff;
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title {
+            font-size: 3rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .noah-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .noah-image:hover {
+            transform: scale(1.02);
+        }
+
+        .instructions, .enemies {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions h2, .enemies h2 {
+            color: #2980b9;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .instructions p, .enemies p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .device-instruction {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .device-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .device-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .start-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .start-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+        }
+
+        .start-button:active {
+            transform: translateY(1px);
+        }
+
+        /* 敵紹介セクションのスタイル */
+        .enemy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .enemy-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .enemy-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .enemy-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .enemy-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+
+        .enemy-description {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.2rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .instructions h2, .enemies h2 {
+                font-size: 1.5rem;
+            }
+
+            .instructions p, .enemies p {
+                font-size: 1rem;
+            }
+
+            .device-instruction {
+                flex-direction: column;
+            }
+
+            .device-box {
+                width: 100%;
+            }
+
+            .enemy-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">⚔️ノアのスマホスラッシュ！</h1>
+        
+        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/opening-39eXn4BviSRHWUOrcnmoiw51a0e7N8.png" alt="ノアのイメージ" class="noah-image">
+        
+        <div class="instructions">
+            <h2>遊び方</h2>
+            <p>ノアと一緒に敵を倒して、デジタルデトックスの世界を守ろう！</p>
+            
+            <div class="device-instruction">
+                <div class="device-box">
+                    <div class="device-icon">💻</div>
+                    <h3>PCの場合</h3>
+                    <p>敵をクリックして倒そう！</p>
+                </div>
+                
+                <div class="device-box">
+                    <div class="device-icon">📱</div>
+                    <h3>スマートフォンの場合</h3>
+                    <p>敵をスワイプして倒そう！</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 敵紹介セクション -->
+        <div class="enemies">
+            <h2>敵キャラクター</h2>
+            <p>デジタルデトックスを妨げる様々な敵が現れます！</p>
+            
+            <div class="enemy-grid">
+                <div class="enemy-item">
+                    <img src="images/notification.png" alt="通知バッジ" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='通知バッジ（画像未設定）';">
+                    <div class="enemy-name">通知バッジ</div>
+                    <div class="enemy-description">気が散る原因</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/red-snare.png" alt="レッドスネア" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='レッドスネア（画像未設定）';">
+                    <div class="enemy-name">レッドスネア</div>
+                    <div class="enemy-description">時間を奪う動画</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/instant-star.png" alt="インスタントスター" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='インスタントスター（画像未設定）';">
+                    <div class="enemy-name">インスタントスター</div>
+                    <div class="enemy-description">SNS中毒の元凶</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/controller.png" alt="コントローラー" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='コントローラー（画像未設定）';">
+                    <div class="enemy-name">コントローラー</div>
+                    <div class="enemy-description">ゲーム依存の象徴</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/message.png" alt="メッセージアプリ" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='メッセージアプリ（画像未設定）';">
+                    <div class="enemy-name">メッセージアプリ</div>
+                    <div class="enemy-description">常に返信を求める</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/ticktickey.png" alt="ティックティッキー" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='ティックティッキー（画像未設定）';">
+                    <div class="enemy-name">ティックティッキー</div>
+                    <div class="enemy-description">短い動画の誘惑</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/good.png" alt="いいね" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='いいね（画像未設定）';">
+                    <div class="enemy-name">いいね</div>
+                    <div class="enemy-description">承認欲求の象徴</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/photogenic.png" alt="映え" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='映え（画像未設定）';">
+                    <div class="enemy-name">映え</div>
+                    <div class="enemy-description">見栄を張る誘惑</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/infinite-scroll.png" alt="無限スクロール" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='無限スクロール（画像未設定）';">
+                    <div class="enemy-name">無限スクロール</div>
+                    <div class="enemy-description">時間泥棒</div>
+                </div>
+                
+                <div class="enemy-item">
+                    <img src="images/in-app-purchase.png" alt="課金" class="enemy-icon" onerror="this.src='/placeholder.svg?height=60&width=60'; this.alt='課金（画像未設定）';">
+                    <div class="enemy-name">課金</div>
+                    <div class="enemy-description">お金を奪う誘惑</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="start-button pulse" id="startButton">ゲームスタート</button>
+    </div>
+
+    <script>
+        // ゲームスタートボタンのイベントリスナー
+        document.getElementById('startButton').addEventListener('click', function() {
+            // play.htmlに直接遷移
+            window.location.href = 'play.html';
+        });
+
+        // デバイス検出
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        // デバイスに応じた説明の強調表示
+        window.addEventListener('DOMContentLoaded', function() {
+            const deviceBoxes = document.querySelectorAll('.device-box');
+            if (isMobileDevice()) {
+                deviceBoxes[1].style.backgroundColor = '#e6f7ff';
+                deviceBoxes[1].style.border = '2px solid #3498db';
+            } else {
+                deviceBoxes[0].style.backgroundColor = '#e6f7ff';
+                deviceBoxes[0].style.border = '2px solid #3498db';
+            }
+        });
+
+        // 画像の読み込みエラー処理
+        document.querySelector('.noah-image').addEventListener('error', function() {
+            this.src = '/placeholder.svg?height=400&width=400';
+            this.alt = 'ノアの画像（読み込みエラー）';
+        });
+    </script>
+</body>
+</html>
