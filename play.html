@@ -432,9 +432,20 @@
             });
             
             gameContainer.appendChild(enemy);
+            
+            // スマホの場合、たまに高速の敵を生成
+            const isMobile = window.innerWidth <= 768;
+            let speed;
+            
+            if (isMobile && Math.random() < 0.3) { // 30%の確率で高速敵
+                speed = 4 + Math.random() * 3; // 4〜7の範囲でスピードを設定
+            } else {
+                speed = 2 + Math.random() * 2; // 通常の2〜4の範囲
+            }
+            
             enemies.push({
                 element: enemy,
-                speed: 2 + Math.random() * 2
+                speed: speed
             });
         }
         
